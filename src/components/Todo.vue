@@ -6,23 +6,42 @@
 
     <div class="main-box">
       <div class="todo-input">
-        <input type="text" placeholder="请输入Todo" class="input-box" />
-        <button class="input-btn">+</button>
+        <input
+          v-model="todoInput"
+          type="text"
+          placeholder="请输入Todo"
+          class="input-box"
+          @keypress.enter="addTodo"
+        />
+        <button class="input-btn" @click="addTodo">+</button>
       </div>
       <ul class="todo-list">
-        <li class="todo-item" v-for="item in 5" :key="item">
-          <input :id="item" type="checkbox" />
-          <label class="todo-item-icon" :for="item">
-            <i class="iconfont icongou"></i>
+        <li class="todo-item" v-for="(item, index) in todoList" :key="index">
+          <input
+            :id="`todo${index}`"
+            type="checkbox"
+            v-model="item.completed"
+          />
+          <label class="todo-item-icon" :for="`todo${index}`">
+            <i
+              class="iconfont icongou"
+              :style="{ color: item.completed ? 'lightgreen' : '#fff' }"
+            ></i>
           </label>
-          <label class="todo-item-cotent" :for="item"
-            >neirongneirong777777777777777777777777777777777777777777777777777777
+          <label
+            class="todo-item-cotent"
+            :for="`todo${index}`"
+            :style="{
+              textDecoration: item.completed ? 'line-through' : 'none',
+              color: item.completed ? '#ccc' : '#000'
+            }"
+            >{{ item.content }}
           </label>
         </li>
       </ul>
       <div class="todo-footer">
-        <div class="footer-count">一共有 0 个Todo</div>
-        <div class="footer-clear">清除所有Todo</div>
+        <div class="footer-count">一共有 {{ todoList.length }} 个Todo</div>
+        <div class="footer-clear" @click="clearTodo">清除所有Todo</div>
       </div>
     </div>
   </div>
@@ -30,7 +49,46 @@
 
 <script>
 export default {
-  name: 'Todo'
+  name: 'Todo',
+  data() {
+    return {
+      todoInput: '',
+      todoList: []
+    }
+  },
+  methods: {
+    addTodo() {
+      if (this.todoInput === '') {
+        alert('请输入Todo')
+      } else {
+        this.todoList.push({
+          content: this.todoInput,
+          completed: false
+        })
+        this.todoInput = ''
+      }
+    },
+    clearTodo() {
+      this.todoList = []
+    },
+    saveStorage() {
+      localStorage.setItem('todoList', JSON.stringify(this.todoList))
+    }
+  },
+  mounted() {
+    const todoList = JSON.parse(localStorage.getItem('todoList'))
+    if (todoList !== undefined) {
+      this.todoList = todoList
+    }
+  },
+  watch: {
+    todoList: {
+      handler() {
+        this.saveStorage()
+      },
+      deep: true
+    }
+  }
 }
 </script>
 
@@ -39,10 +97,14 @@ body {
   width: 550px;
   max-width: 90vw;
   margin: 0 auto !important;
-  transition: all ease 0.3s;
+  transition: all ease 0.5s;
   &:hover {
     background-color: #cc9a9a;
     .title {
+      color: #fff;
+    }
+    .input-btn {
+      background-color: #cc9a9a;
       color: #fff;
     }
   }
@@ -53,10 +115,11 @@ body {
   text-align: center;
   padding-top: 10px;
   color: #cc9a9a;
+  transition: all ease 0.5s;
 }
 
 .main-box {
-  margin: 20px auto 0;
+  margin: 20px auto 30px;
   background-color: #fff;
   box-shadow: #aaa 0px 20px 35px -9px;
 }
@@ -86,11 +149,12 @@ body {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #cc9a9a;
-  color: #fff;
+  background-color: #fff;
+  color: #cc9a9a;
   border: none;
   font-size: 30px;
   outline: none;
+  transition: all ease 0.5s;
 }
 
 .todo-item {
@@ -103,6 +167,7 @@ body {
     display: none;
   }
 }
+
 .todo-item-icon {
   border: solid 1px #ddd;
   width: 40px;
@@ -112,7 +177,8 @@ body {
   text-align: center;
   margin: 0 10px;
   .icongou {
-    color: lightgreen;
+    transition: all ease 0.5s;
+    color: #fff;
     font-size: 30px;
   }
 }
@@ -121,9 +187,11 @@ body {
   padding: 0 10px;
   line-height: 60px;
   flex: 1;
+  font-size: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: all ease 0.5s;
 }
 .todo-footer {
   display: flex;
