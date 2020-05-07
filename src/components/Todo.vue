@@ -96,6 +96,7 @@ export default {
 body {
   width: 550px;
   max-width: 90vw;
+  min-width: 320px;
   margin: 0 auto !important;
   transition: all ease 0.5s;
   &:hover {
