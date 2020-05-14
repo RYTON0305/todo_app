@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style lang="less">
-@import url('//at.alicdn.com/t/font_1489924_h29eqpvbzwi.css');
+@import url('//at.alicdn.com/t/font_1489924_vkiz6mk5fan.css');
 * {
   box-sizing: border-box;
 }

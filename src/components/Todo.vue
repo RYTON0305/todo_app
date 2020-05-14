@@ -21,6 +21,7 @@
             :id="`todo${index}`"
             type="checkbox"
             v-model="item.completed"
+            class="item-checkbox"
           />
           <label class="todo-item-icon" :for="`todo${index}`">
             <i
@@ -28,15 +29,18 @@
               :style="{ color: item.completed ? 'lightgreen' : '#fff' }"
             ></i>
           </label>
-          <label
+          <!-- <div
+            v-if="item.editing"
             class="todo-item-cotent"
-            :for="`todo${index}`"
             :style="{
               textDecoration: item.completed ? 'line-through' : 'none',
               color: item.completed ? '#ccc' : '#000'
             }"
-            >{{ item.content }}
-          </label>
+          >
+            {{ item.content }}
+          </div> -->
+          <input class="todo-item-input" type="text" v-model="item.content" />
+          <i class="iconfont iconxiugai item-editing"></i>
         </li>
       </ul>
       <div class="todo-footer">
@@ -53,7 +57,7 @@ export default {
   data() {
     return {
       todoInput: '',
-      todoList: []
+      todoList: JSON.parse(localStorage.getItem('todoList')) || []
     }
   },
   methods: {
@@ -63,7 +67,8 @@ export default {
       } else {
         this.todoList.push({
           content: this.todoInput,
-          completed: false
+          completed: false,
+          editing: false
         })
         this.todoInput = ''
       }
@@ -76,10 +81,11 @@ export default {
     }
   },
   mounted() {
-    const todoList = JSON.parse(localStorage.getItem('todoList'))
-    if (todoList !== undefined) {
-      this.todoList = todoList
-    }
+    // const todoList =
+    // console.log(todoList)
+    // if (todoList) {
+    //   this.todoList = todoList
+    // }
   },
   watch: {
     todoList: {
@@ -164,7 +170,9 @@ body {
   display: flex;
   align-items: center;
   padding-right: 10px;
-  input {
+  // overflow: hidden;
+  position: relative;
+  .item-checkbox {
     display: none;
   }
 }
@@ -183,8 +191,16 @@ body {
     font-size: 30px;
   }
 }
-.todo-item-cotent {
-  height: 60px;
+// .todo-item-cotent,
+.item-editing {
+  display: none;
+  padding-right: 10px;
+  transition: 0.5s all ease;
+  position: absolute;
+  right: 20px;
+}
+.todo-item-input {
+  height: 100%;
   padding: 0 10px;
   line-height: 60px;
   flex: 1;
@@ -192,8 +208,41 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border: none;
+  outline: none;
+  font-style: italic;
   transition: all ease 0.5s;
+  &:focus {
+    color: #bbb;
+  }
+  // &:hover + .item-editing {
+  //   color: #ccc;
+  //   display: block;
+  // }
+  &:focus + .item-editing {
+    color: #cc9a9a;
+    font-weight: 700;
+    display: block;
+  }
 }
+// .todo-edit-btn {
+//   transition: 0.5s all ease;
+//   display: none;
+//   border: solid 1px #ddd;
+//   width: 30px;
+//   height: 30px;
+//   border-radius: 50%;
+//   text-align: center;
+//   line-height: 30px;
+//   margin: 0 10px;
+//   color: #cc9a9a;
+//   border-color: #cc9a9a;
+//   background-color: #fff;
+//   .iconfont {
+//     font-size: 12px;
+//     font-weight: 700;
+//   }
+// }
 .todo-footer {
   display: flex;
   justify-content: space-between;
