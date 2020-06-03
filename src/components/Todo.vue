@@ -175,6 +175,10 @@ body {
   .item-checkbox {
     display: none;
   }
+  .item-checkbox:checked ~ .todo-item-input {
+    text-decoration: line-through;
+    color: #aaa;
+  }
 }
 
 .todo-item-icon {
