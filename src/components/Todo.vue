@@ -16,7 +16,11 @@
         <button class="input-btn" @click="addTodo">+</button>
       </div>
       <ul class="todo-list">
-        <li class="todo-item" v-for="(item, index) in todoList" :key="index">
+        <li
+          class="todo-item"
+          v-for="(item, index) in todoList"
+          :key="item.time"
+        >
           <input
             :id="`todo${index}`"
             type="checkbox"
@@ -41,6 +45,7 @@
           </div> -->
           <input class="todo-item-input" type="text" v-model="item.content" />
           <i class="iconfont iconxiugai item-editing"></i>
+          <i class="iconfont iconcha item-delete" @click="delTodo(index)"></i>
         </li>
       </ul>
       <div class="todo-footer">
@@ -54,18 +59,19 @@
 <script>
 export default {
   name: 'Todo',
-  data() {
+  data () {
     return {
       todoInput: '',
       todoList: JSON.parse(localStorage.getItem('todoList')) || []
     }
   },
   methods: {
-    addTodo() {
+    addTodo () {
       if (this.todoInput === '') {
         alert('请输入Todo')
       } else {
         this.todoList.push({
+          time: new Date().getTime(),
           content: this.todoInput,
           completed: false,
           editing: false
@@ -73,14 +79,17 @@ export default {
         this.todoInput = ''
       }
     },
-    clearTodo() {
+    delTodo (index) {
+      this.todoList.splice(index, 1)
+    },
+    clearTodo () {
       this.todoList = []
     },
-    saveStorage() {
+    saveStorage () {
       localStorage.setItem('todoList', JSON.stringify(this.todoList))
     }
   },
-  mounted() {
+  mounted () {
     // const todoList =
     // console.log(todoList)
     // if (todoList) {
@@ -89,7 +98,7 @@ export default {
   },
   watch: {
     todoList: {
-      handler() {
+      handler () {
         this.saveStorage()
       },
       deep: true
@@ -202,7 +211,23 @@ body {
   transition: 0.5s all ease;
   position: absolute;
   right: 20px;
+  cursor: pointer;
 }
+.item-delete {
+  display: none;
+  padding-right: 10px;
+  transition: 0.5s all ease;
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+  &:hover {
+    display: block;
+    color: #cc9a9a;
+    font-weight: 700;
+    display: block;
+  }
+}
+
 .todo-item-input {
   height: 100%;
   padding: 0 10px;
@@ -224,6 +249,11 @@ body {
   //   display: block;
   // }
   &:focus + .item-editing {
+    color: #cc9a9a;
+    font-weight: 700;
+    display: block;
+  }
+  &:hover:not(:focus) + .item-editing + .item-delete {
     color: #cc9a9a;
     font-weight: 700;
     display: block;
